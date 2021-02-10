@@ -11,9 +11,9 @@ import numpy as np
 
 #get the input file name as the first argument from command line
 try:
-    fname=sys.argv[1]
+    #fname=sys.argv[1]
+    fname='/Users/livi/Git/exciton1d-1/PYexample.inp'
 except ValueError:
-    print(ValueError)
 #if given otherwise use default parameters    
     if ValueError !=0:
         print('No control file given. Using default parameters')
@@ -22,23 +22,27 @@ except ValueError:
     if not path.exists(fname):
         print('Input file not found...aborting')
 #open the user input file and read in the parameters
-with open(fname,'r') as f:
+with open(fname,'r',encoding='utf-8') as f:
     #ios = 0  #the in/out status
     #line = 0 #the current line number
     print('Reading the input file...'+'\n'+'**********************************'+'\n'+'**********************************')
-    r = re.compile("([a-zA-Z]+)([0-9|True|False]*)")
     parameters=['task_title','nmol','vibmax','hw','lambda_n','lambda_c','lambda_a','JCoul','ES1','te','th','ECT','ECTInf','one_state','two_state','ct_state','abs_lw','esnum']
     parameters={i:None for i in parameters}
     for buff in f.readlines():#!continue the loop until end of file,!read a line
-        print('This is buff',buff)
         if buff.startswith('#'): #treat as a comment
             continue
         else:#find the label and assign the appropriate value to the variable
-            label,buff= r.match(buff)#parse the line into a label and parameter
+            label_buff=buff.split()
+            if label_buff[1].isnumeric():
+                label_buff[1]=float(label_buff[1])
+            elif label_buff[1] in ['True', 'False']:
+                label_buff[1]=bool(label_buff[1])
+            label,buff= label_buff[0],label_buff[1]#parse the line into a label and parameter
             try:
                 parameters[label]=buff
             except:
-                input('invalid label at line','\n',buff,'\n','press enter to continue or ctrl+c to abort')
+                input('invalid label at line','\n',label,'\n','press enter to continue or ctrl+c to abort')
+print(parameters)
 print('**********************************'+'\n'+'**********************************')
     
 def c1010():
