@@ -11,4 +11,5 @@ from numpy import linalg as LA
 
 def diagonalize(Ta, Tn, Tw, rrange, Tiu):
     w,v=LA.eigh(Ta,UPLO='U')
+    #w,v=LA.eigh(v,UPLO='U')
     return v,w

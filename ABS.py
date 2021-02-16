@@ -60,15 +60,15 @@ def absorption(p):
         for vib in range(0, p.vibmax+1):
             h1 = p.nx_1p[vib]
             if ( np.isnan(h1)):
-                break         
+                continue         
             else:
-                h1=int(h1)   
+                h1=int(h1)-1   
             #! assume parallel transition dipole moments
             osc[state-1] = osc[state-1] + p.h[h1,state-1]*p.fc_gf[0,vib]
         osc[state-1] = osc[state-1]*np.conjugate(osc[state-1])
 
     #! calculate the absorption spectrum and write to file
-    with open(p.task_title+'_ab_csv','w') as wf:
+    with open(p.task_title+'_ab.csv','w') as wf:
         wf.write('energy,absorption\n')
 
         #! stet number of spectral points to be evaluated
@@ -115,10 +115,10 @@ def absorption(p):
     with open(p.task_title+'_mom.csv','w') as mwf:
         mwf.write('Moments of the absorption spectrum\n')
         mwf.write('Moment Number, Moment Value\n')
-        for m in range(1, 3):
+        for m in range(1, 3+1):
             mwf.write('{0:2d},{1:.6f}\n'.format(m, moment[m-1]) ) 
         
         mwf.write( 'Central moments of the absorption spectrum\n')
         mwf.write( 'Moment Number, Moment Value\n')
-        for m in range(1, 3):
+        for m in range(1, 3+1):
             mwf.write('{0:2d},{1:.6f}\n'.format(m, cmoment[m-1]))

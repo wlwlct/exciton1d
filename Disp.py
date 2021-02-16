@@ -11,9 +11,9 @@ def dispersion(k,p):
     #    print('{:4d},{:.7f})'.format(k, p.eval[1]))
         with open(file,'w') as disp_wf:
                 disp_wf.write('k,energy\n')
-                disp_wf.write( '{0:4d},{1:.7f}\n'.format(k,p.eval[1]))
+                disp_wf.write( '{0:4d},{1:.7f}\n'.format(k,p.eval[0]))
     else:
     #    file = p.task_title+'_disp.csv'
     #    print('{:4d},{:.7f})'.format(k, p.eval[1]))
         with open(file,'a') as disp_wf:
-                disp_wf.write('{0:4d},{1:.7f}\n'.format(k, p.eval[1]))
+                disp_wf.write('{0:4d},{1:.7f}\n'.format(k, p.eval[0]))

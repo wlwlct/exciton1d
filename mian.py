@@ -113,10 +113,13 @@ if __name__=='__main__':
     parameters.kount = 0
     if (parameters.one_state):
         parameters=num_par.index_1p(parameters)
+        print('after one state',parameters.kount)
     if (parameters.two_state):
         parameters=num_par.index_2p(parameters)
+        print('after two state',parameters.kount)
     if (parameters.ct_state):
         parameters=num_par.index_ct(parameters)
+        print('after ct state',parameters.kount)
     #make sure the number of requested eigenstates is less than the
     #total number of eigenstates possible
     parameters.esnum = min(parameters.esnum,parameters.kount)
@@ -125,8 +128,8 @@ if __name__=='__main__':
     parameters=FC_Table.set_fctable(parameters)  
 
     #allocate space for the Hamiltonian matrix and eigenvalue array
-    parameters.h=np.zeros([parameters.kount+1,parameters.kount+1],dtype=complex) # !the Hamiltonian!!!!!!!!!!!!!!!!!!!!!!!!!!
-    parameters.eval=np.zeros([parameters.kount+1])    # !eigenvalues
+    parameters.h=np.zeros([parameters.kount,parameters.kount],dtype=complex) # !the Hamiltonian!!!!!!!!!!!!!!!!!!!!!!!!!!
+    parameters.eval=np.zeros([parameters.kount])    # !eigenvalues
 
     print(' Will now build the Hamiltonian, the diminsion of each k-block is:',parameters.kount)
     print('********************************************************************')
@@ -150,16 +153,18 @@ if __name__=='__main__':
             parameters=Hamiltonian.build_h2pct(k,parameters)
         #diagonalize the hamiltonian
         if ( k == 0) or (parameters.esnum == parameters.kount ):
-            print(parameters.h.shape)
             parameters.h,parameters.eval=Dia.diagonalize(parameters.h, parameters.kount, parameters.eval, 'A', parameters.kount)
         else:
             parameters.h,parameters.eval=Dia.diagonalize(parameters.h, parameters.kount, parameters.eval, 'I', parameters.esnum)
+        #print(parameters.eval)
         #calculate
         # absorption spectrum
         #(only k=0 absorbes assuming parallel dipoles)
         if ( k == 0 ):
             ABS.absorption(parameters)
         Disp.dispersion(k,parameters)
+
+        #print(parameters.eval)
         
         print('Done with wavevector k: ', k)
 

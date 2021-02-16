@@ -45,12 +45,12 @@ def build_h1p(k,p):
     #integer vib1, vib2, h1, h2
     #real*8 Jk 
 
-    print('build h1p')
+    #print('build h1p')
 
     #choose the first basis element |k,vib1>
     for vib1 in range(0, p.vibmax+1):
         h1 = int(p.nx_1p[vib1]) #get the basis index
-
+        h1=h1-1
         #Add the vibrational and monomer energy to the diagonal
         p.h[ h1, h1 ] = vib1*1.0 + p.ES1
 
@@ -58,7 +58,7 @@ def build_h1p(k,p):
         # and calculate J(k)*FC(0,vib1)*FC(0,vib2)
         for vib2 in range(0, p.vibmax+1):
             h2 = int(p.nx_1p[vib2]) #get the basis index
-            
+            h2=h2-1
             #calculate Jk
             if ( p.nmol == 1 ):
                 Jk = 0.0
@@ -94,16 +94,16 @@ def build_h2p(k,p):
     #integer, intent(in) :: k
     #integer vib1, s1, vibv1, vib2, s2, vibv2, h1, h2, ds
     #complex*16 cpl_sum, modulate
-    print('build h2p')
+    #print('build h2p')
     #choose the first basis element |k,vib1,s1,vibv1>
     for vib1 in range(0,p.vibmax+1):
         for s1 in range(p.nlbnd, p.nubnd+1):
             for vibv1 in range(1, p.vibmax+1):
                 h1 = p.nx_2p[vib1, s1-p.nlbnd, vibv1-1]#get the basis index
                 if (np.isnan(h1)):#if h1 is empty
-                    break       #and check to make sure it is in the basis sets
+                    continue       #and check to make sure it is in the basis sets
                 else:
-                    h1=int(h1)
+                    h1=int(h1)-1
 
                 #Add the vibrational and monomer energy to the diagonal
                 p.h[h1,h1] = ( vib1 + vibv1 ) * 1.0 + p.ES1
@@ -114,9 +114,9 @@ def build_h2p(k,p):
                         for vibv2 in range(1, p.vibmax+1):
                             h2 = p.nx_2p[vib2, s2-p.nlbnd, vibv2-1] #get the basis index
                             if (np.isnan(h2)):#if h2 is empty
-                                break                     #and check to make sure
+                                continue                     #and check to make sure
                             else:
-                                h2=int(h2)                #it is in the basis set
+                                h2=int(h2)-1                #it is in the basis set
                                                           
                             #calculate the coupling term
                             cpl_sum = p.complex_zero #initialize to zero
@@ -186,15 +186,15 @@ def build_h1p2p(k,p):
     #integer, intent(in) :: k
     #integer vib1, vib2, s2, vibv2, h1, h2, ds
     #complex*16 cpl_sum, modulate
-    print('Build h1p2p')
+    #print('Build h1p2p')
     
     #!choose the 1-particle basis set |k,vib1>
     for vib1 in range(0, p.vibmax+1):
         h1 = p.nx_1p[vib1]   #! get the basis index and make sure it 
         if (np.isnan(h1)):#if h1 is empty
-            break #!is in the basis set
+            continue #!is in the basis set
         else:
-            h1=int(h1)
+            h1=int(h1)-1
 
         #!choose the 2-particle basis set |k,vib2;s2,vibv2>
         for vib2 in range(0, p.vibmax+1):
@@ -202,9 +202,9 @@ def build_h1p2p(k,p):
                 for vibv2 in range(1, p.vibmax+1):
                     h2 = p.nx_2p[vib2,s2-p.nlbnd, vibv2-1] #get the basis index and make
                     if (np.isnan(h2)):
-                        break                     #!sure it is in the basis set
+                        continue                     #!sure it is in the basis set
                     else:
-                        h2=int(h2)
+                        h2=int(h2)-1
                     
                     #!the exciton moves -s2
                     ds = -s2
@@ -236,7 +236,7 @@ def build_h1p2p(k,p):
 def build_hct(k,p):
     #integer, intent(in) :: k
     #integer vibc, sa, viba, h1, vibc2, sa2, viba2, h2, s, bring_inside_nxrange, kd
-    print('Start with hct')
+    #print('Start with hct')
 
     #! get the diagonal energies
     #! choose the charge-transfer state |k,vibc,sa,viba>
@@ -245,9 +245,9 @@ def build_hct(k,p):
             for viba in range(0, p.vibmax+1):
                 h1 = p.nx_ct[vibc, sa-p.nlbnd, viba] #!get the basis index and check
                 if (np.isnan(h1)):
-                    break     #!that it is not empty
+                    continue     #!that it is not empty
                 else:
-                    h1=int(h1)
+                    h1=int(h1)-1
 
                 #! assign the energy 
                 s = abs(sa)
@@ -259,13 +259,13 @@ def build_hct(k,p):
                         for viba2 in range(0, p.vibmax+1):
                             h2 = p.nx_ct[vibc2, sa2-p.nlbnd, viba2]  # get the basis index and
                             if (np.isnan(h2) ):
-                                break       # check that not empty
+                                continue       # check that not empty
                             else:
-                                h2=int(h2)
+                                h2=int(h2)-1
                             #! calculate the electron/hole displacement
                             s = bring_inside_nxrange(sa2-sa,p)
                             if ( abs(s)!= 1):
-                                break       #! only nearest neighbor
+                                continue       #! only nearest neighbor
                                             #! charge transfer allowed
                             #! calculate the matrix element
                             p.h[h1, h2] = p.te * p.fc_ga[0,viba]*p.fc_ga[0,viba2]*kd(vibc, vibc2) + \
@@ -285,19 +285,20 @@ def build_hct(k,p):
 def build_h1pct(k,p):
     #integer, intent(in) :: k
     #integer vib, vibc, sa, viba, h1, h2
-    print('start with h1pct')
+    #print('start with h1pct')
     #!choose the 1 particle basis element |k,vib>
     for vib in range(0, p.vibmax+1):
         h1 = int(p.nx_1p[vib]) #!get the basis index
+        h1=h1-1
         #!choose the charge-transfer basis element |k,vibc,sa,viba>
         for vibc in range( 0, p.vibmax+1):
             for sa in range(p.nlbnd, p.nubnd+1):
                 for viba in range( 0, p.vibmax+1):
                     h2 = p.nx_ct[vibc, sa-p.nlbnd, viba] #get the basis index and make
                     if (np.isnan(h2)):
-                        break     #!sure it is in the basis set
+                        continue     #!sure it is in the basis set
                     else:
-                        h2=int(h2)
+                        h2=int(h2)-1
                     
                     #!assign the coupling term to the hamiltonian
                     #!we only have nearest-neighbor coupling
@@ -320,25 +321,25 @@ def build_h2pct(k,p):
     #integer, intent(in) :: k
     #integer vib, sv, vibv, vibc, sa, viba, h1, h2, kd,bring_inside_nxrange
     
-    print('build h2pct')
+    #print('build h2pct')
     #!choose the 2-particle basis element |k,vib,sv,vibv>
     for vib in range( 0, p.vibmax+1):
         for sv in range(p.nlbnd, p.nubnd+1):
             for vibv in range(1, p.vibmax+1):
                 h1 = p.nx_2p[vib, sv-p.nlbnd, vibv-1] # get the basis index and make
                 if ( np.isnan(h1)):
-                    break    # sure it is inthe basis
+                    continue    # sure it is inthe basis
                 else:
-                    h1=int(h1)
+                    h1=int(h1)-1
                 #!choose the charge-transfer basis element |k,vibc,sa,viba>
                 for vibc in range(0, p.vibmax+1):
                     for sa in range(p.nlbnd, p.nubnd+1):
                         for viba in range( 0, p.vibmax+1):        
                             h2 = p.nx_ct[vibc, sa-p.nlbnd, viba] #! get the basis index and make
                             if ( np.isnan(h2)):
-                                break     #! sure it is in the basis
+                                continue     #! sure it is in the basis
                             else:
-                                h2=int(h2)
+                                h2=int(h2)-1
 
                             #!assign the coupling term to the hamiltonian.
                             #!we only have nearest-neighbor coupling #!THIS IS EXCHANGE TYPE COUPLING
